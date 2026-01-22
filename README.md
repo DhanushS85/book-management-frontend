@@ -8,6 +8,7 @@ Features
  2.View all books
  3.Delete books
  4.API integration with Spring Boot backend
+ 5.Upload Book Cover image 
 
 Tech Stack
  React
