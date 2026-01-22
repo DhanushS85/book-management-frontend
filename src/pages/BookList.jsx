@@ -6,6 +6,7 @@ import axios from "axios";
 const BookList = () => {
   const [books, setBooks] = useState([]);
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const perPage = 10;
   const apiUrl = import.meta.env.VITE_API_URL
@@ -32,7 +33,8 @@ const BookList = () => {
     axios
       .get(`${apiUrl}/api/books`)
       .then((res) => setBooks(res.data))
-      .catch((err) => console.error("Fetch error:", err));
+      .catch((err) => console.error("Fetch error:", err))
+      .finally(() => setLoading(false));
   }, []);
 
   // Delete book
@@ -76,40 +78,51 @@ const BookList = () => {
         </thead>
 
         <tbody>
-          {paginated.map((book, index) => (
-            <tr
-              key={book.id}
-              onClick={() => navigate(`/books/${book.id}`)}
-              style={{ cursor: "pointer" }}
-            >
-              <td>{(page - 1) * perPage + index + 1}</td>
-              <td>{book.title}</td>
-              <td>{book.author}</td>
-              <td>{book.genre}</td>
-              <td>{book.rating}</td>
-              <td>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteBook(book.id);
-                  }}
-                >
-                  Delete
-                </Button>
+          {loading && (
+            <tr>
+              <td colSpan="6">
+                <Spinner animation="border" size="sm" />
               </td>
             </tr>
-          ))}
+          )}
 
-          {paginated.length === 0 && (
+
+          {!loading && paginated.length === 0 && (
             <tr>
               <td colSpan="6" className="text-muted">
                 No books available
               </td>
             </tr>
           )}
+
+          {!loading &&
+            paginated.map((book, index) => (
+              <tr
+                key={book.id}
+                onClick={() => navigate(`/books/${book.id}`)}
+                style={{ cursor: "pointer" }}
+              >
+                <td>{(page - 1) * perPage + index + 1}</td>
+                <td>{book.title}</td>
+                <td>{book.author}</td>
+                <td>{book.genre}</td>
+                <td>{book.rating}</td>
+                <td>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteBook(book.id);
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </td>
+              </tr>
+            ))}
         </tbody>
+
       </Table>
 
       {/* Pagination */}
