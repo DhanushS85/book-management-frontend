@@ -1,16 +1,41 @@
-# React + Vite
+Book Management – Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+ A modern React frontend for the Book Management system. This app allows users to view, add and delete books through a clean UI and communicates with a Spring Boot backend via REST APIs.
+ Built with React + Vite, deployed easily on Vercel
 
-Currently, two official plugins are available:
+Features
+ 1.Add new book
+ 2.View all books
+ 3.Delete books
+ 4.API integration with Spring Boot backend
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Tech Stack
+ React
+ Vite
+ JavaScript (ES6+)
+ Bootstrap
+ Axios / Fetch API (for API calls)
+ Vercel (deployment)
 
-## React Compiler
+Project Structure
+ book-management-frontend/
+├── src/
+│ ├── components 
+│ ├── pages
+│ ├── App.jsx 
+│ ├── main.jsx 
+│ └── index.css 
+├── public/
+├── vite.config.js
+├── package.json
+└── README.md
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Environment Variables
+ VITE_API_BASE_URL=https://your-backend-url/api
 
-## Expanding the ESLint configuration
+Deployment (Vercel)
+ 1.Push your code to GitHub
+ 2.Import the repo in Vercel
+ 3.Set environment variables in Vercel:VITE_API_BASE_URL=https://your-backend-url/api
+ 4.Deploy 
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
