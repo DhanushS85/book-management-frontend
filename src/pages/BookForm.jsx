@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form, Button, Card, Row, Col } from "react-bootstrap";
+import { Form, Button, Card, Row, Col, Spinner } from "react-bootstrap";
 import axios from "axios";
 
 const BookForm = () => {
@@ -11,8 +11,11 @@ const BookForm = () => {
         genre: "",
         rating: 1
     });
-    const apiUrl=import.meta.env.VITE_API_URL
+
     const [image, setImage] = useState(null);
+    const [isSaving, setIsSaving] = useState(false);
+
+    const apiUrl = import.meta.env.VITE_API_URL;
 
     const handleChange = (e) => {
         setBook({ ...book, [e.target.name]: e.target.value });
@@ -20,12 +23,14 @@ const BookForm = () => {
 
     const validate = () => {
         return (
+            book.title.length > 0 &&
             book.title.length <= 100 &&
+            book.author.length > 0 &&
             book.author.length <= 50 &&
             /^\d{13}$/.test(book.isbn) &&
+            book.genre.length > 0 &&
             book.rating >= 1 &&
             book.rating <= 5
-            // image is optional, no validation here
         );
     };
 
@@ -38,28 +43,24 @@ const BookForm = () => {
         }
 
         try {
+            setIsSaving(true);
+
             const formData = new FormData();
 
-            // Always append book JSON
             formData.append(
                 "book",
                 new Blob([JSON.stringify(book)], { type: "application/json" })
             );
 
-            // Append image only if user selected one
             if (image) {
                 formData.append("image", image);
             }
 
-            await axios.post(
-                `${apiUrl}/api/books`,
-                formData,
-                {
-                    headers: {
-                        "Content-Type": "multipart/form-data"
-                    }
+            await axios.post(`${apiUrl}/api/books`, formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
                 }
-            );
+            });
 
             alert("Book Added Successfully");
 
@@ -75,13 +76,21 @@ const BookForm = () => {
         } catch (error) {
             console.error(error);
             alert("Failed to add book. Please try again.");
+        } finally {
+            setIsSaving(false);
         }
     };
 
     return (
-        <Card className="shadow-sm mx-auto my-4" style={{ maxWidth: "600px", borderRadius: "12px" }}>
+        <Card
+            className="shadow-sm mx-auto my-4"
+            style={{ maxWidth: "600px", borderRadius: "12px" }}
+        >
             <Card.Body>
-                <Card.Title className="mb-4 text-center fw-bold" style={{ fontSize: "1.8rem" }}>
+                <Card.Title
+                    className="mb-4 text-center fw-bold"
+                    style={{ fontSize: "1.8rem" }}
+                >
                     Add New Book
                 </Card.Title>
 
@@ -140,7 +149,10 @@ const BookForm = () => {
                                     maxLength={13}
                                     inputMode="numeric"
                                     onChange={(e) =>
-                                        setBook({ ...book, isbn: e.target.value.replace(/\D/g, "") })
+                                        setBook({
+                                            ...book,
+                                            isbn: e.target.value.replace(/\D/g, "")
+                                        })
                                     }
                                     className="form-control-lg"
                                 />
@@ -204,9 +216,27 @@ const BookForm = () => {
                         />
                     </Form.Group>
 
+                    {/* Submit Button */}
                     <div className="d-grid">
-                        <Button type="submit" size="lg" style={{ backgroundColor: "#343a40", border: "none" }}>
-                            Save Book
+                        <Button
+                            type="submit"
+                            size="lg"
+                            disabled={isSaving}
+                            style={{ backgroundColor: "#343a40", border: "none" }}
+                        >
+                            {isSaving ? (
+                                <>
+                                    <Spinner
+                                        as="span"
+                                        animation="border"
+                                        size="sm"
+                                        className="me-2"
+                                    />
+                                    Saving...
+                                </>
+                            ) : (
+                                "Save Book"
+                            )}
                         </Button>
                     </div>
 
