@@ -40,3 +40,8 @@ Deployment (Vercel)
  3.Set environment variables in Vercel:VITE_API_BASE_URL=https://your-backend-url/api
  4.Deploy 
 
+Running Locally
+ git clone <your-frontend-repo-link>
+ cd <your-frontend-folder>
+ npm run dev
+
