@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Form, Button, Card, Row, Col, Spinner } from "react-bootstrap";
 import axios from "axios";
 
@@ -16,6 +16,8 @@ const BookForm = () => {
     const [isSaving, setIsSaving] = useState(false);
 
     const apiUrl = import.meta.env.VITE_API_URL;
+
+    const fileInputRef = useRef(null); 
 
     const handleChange = (e) => {
         setBook({ ...book, [e.target.name]: e.target.value });
@@ -46,7 +48,6 @@ const BookForm = () => {
             setIsSaving(true);
 
             const formData = new FormData();
-
             formData.append(
                 "book",
                 new Blob([JSON.stringify(book)], { type: "application/json" })
@@ -73,6 +74,10 @@ const BookForm = () => {
                 rating: 1
             });
             setImage(null);
+
+            if (fileInputRef.current) {
+                fileInputRef.current.value = null;
+            }
         } catch (error) {
             console.error(error);
             alert("Failed to add book. Please try again.");
@@ -211,6 +216,7 @@ const BookForm = () => {
                         <Form.Control
                             type="file"
                             accept="image/*"
+                            ref={fileInputRef} 
                             onChange={(e) => setImage(e.target.files[0])}
                             className="form-control-lg"
                         />
