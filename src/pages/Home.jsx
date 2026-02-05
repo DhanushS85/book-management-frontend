@@ -7,28 +7,39 @@ const Home = () => {
   const navigate = useNavigate();
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
-  const apiUrl = import.meta.env.VITE_API_URL
+
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const loadBooks = async () => {
       try {
-        const res = await axios.get(`${apiUrl}/api/books`);
-        const firstFour = res.data.slice(0, 4);
+        const res = await axios.get(`${apiUrl}/api/books`, {
+          params: {
+            page: 0,
+            size: 4,
+            sortBy: "id",
+            direction: "desc",
+          },
+        });
 
-        // Fetch Google Books thumbnails for each book
+        const fetchedBooks = res.data.content;
+
+        //Fetch Google Books thumbnails
         const booksWithThumbnails = await Promise.all(
-          firstFour.map(async (book) => {
+          fetchedBooks.map(async (book) => {
             try {
               const googleRes = await axios.get(
                 `${apiUrl}/api/external/google-books/${book.isbn}`
               );
+
               const googleData = googleRes.data?.items?.[0]?.volumeInfo;
+
               return {
                 ...book,
                 thumbnail:
                   googleData?.imageLinks?.thumbnail || book.imgUrl || null,
               };
             } catch (err) {
-              // fallback to uploaded image
               return { ...book, thumbnail: book.imgUrl || null };
             }
           })
@@ -47,7 +58,7 @@ const Home = () => {
 
   return (
     <>
-      {/* Hero Section */}
+
       <div className="bg-dark text-light py-5 text-center">
         <Container>
           <h1 className="display-5 fw-bold">📚 Book Management System</h1>
@@ -65,7 +76,6 @@ const Home = () => {
         </Container>
       </div>
 
-      {/* Book Gallery */}
       <Container className="my-5">
         <h3 className="fw-bold mb-4 text-center">📖 Featured Books</h3>
 
@@ -103,7 +113,6 @@ const Home = () => {
               ))}
             </Row>
 
-            {/* Show More Button */}
             <div className="text-center mt-5">
               <Button
                 variant="outline-dark"
@@ -117,7 +126,6 @@ const Home = () => {
         )}
       </Container>
 
-      {/* Hover Styling */}
       <style>{`
         .book-card {
           cursor: pointer;

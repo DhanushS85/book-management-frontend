@@ -18,17 +18,13 @@ const BookDetails = () => {
         setBook(res.data);
         return axios.get(
           `${apiUrl}/api/external/google-books/${res.data.isbn}`
-        );
+        );  
       })
       .then(res => setGoogleData(res.data?.items?.[0]?.volumeInfo))
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
   }, [id]);
 
-
-  useEffect(() => {
-  console.log("Cover Image URL:", book?.imgUrl);
-}, [book]);
 
   if (loading) {
     return (
@@ -88,12 +84,12 @@ const BookDetails = () => {
                   <p><b>Genre:</b> {book.genre}</p>
                   <p><b>Publication Date:</b> {book.publicationDate}</p>
                   <p><b>ISBN:</b> {book.isbn}</p>
-                  <p><b>Rating:</b> ⭐ {book.rating} / 5</p>
+                  <p><b>Rating:</b>  {book.rating} / 5</p>
                 </Col>
               </Row>
             </Tab>
 
-            {/*  MORE DETAILS – Google Books ONLY */}
+            {/*  MORE DETAILS – Google Books */}
             <Tab eventKey="more" title="More Details">
               {googleData ? (
                 <Row className="align-items-start">

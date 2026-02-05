@@ -5,58 +5,63 @@ import axios from "axios";
 
 const BookList = () => {
   const [books, setBooks] = useState([]);
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true); 
-  const navigate = useNavigate();
+  const [page, setPage] = useState(0); 
+  const [totalPages, setTotalPages] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  const [sortBy, setSortBy] = useState("id");
+  const [direction, setDirection] = useState("asc");
 
   const perPage = 10;
+  const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_API_URL;
 
-  // Sort by any field
-  const sortBy = (field) => {
-    const sorted = [...books].sort((a, b) =>
-      a[field] > b[field] ? 1 : -1
-    );
-    setBooks(sorted);
-  };
-  // Sort rating low to high
-  const sortRatingLowToHigh = () => {
-    const sorted = [...books].sort((a, b) => a.rating - b.rating);
-    setBooks(sorted);
-  };
-  // Sort rating high to low
-  const sortRatingHighToLow = () => {
-    const sorted = [...books].sort((a, b) => b.rating - a.rating);
-    setBooks(sorted);
-  };
-
-  // Fetch books
-  useEffect(() => {
+  const fetchBooks = () => {
     setLoading(true);
     axios
-      .get(`${apiUrl}/api/books`)
-      .then((res) => setBooks(res.data))
+      .get(`${apiUrl}/api/books`, {
+        params: {
+          page,
+          size: perPage,
+          sortBy,
+          direction,
+        },
+      })
+      .then((res) => {
+        setBooks(res.data.content);
+        setTotalPages(res.data.totalPages);
+      })
       .catch((err) => console.error("Fetch error:", err))
-      .finally(() => setLoading(false)); 
-  }, []);
+      .finally(() => setLoading(false));
+  };
 
-  // Delete book
+  useEffect(() => {
+    fetchBooks();
+  }, [page, sortBy, direction]);
+
+
   const deleteBook = (id) => {
     axios
       .delete(`${apiUrl}/api/books/${id}`)
-      .then(() => {
-        setBooks(books.filter((b) => b.id !== id));
-      })
+      .then(() => fetchBooks())
       .catch((err) => console.error("Delete failed:", err));
   };
 
-  const paginated = books.slice((page - 1) * perPage, page * perPage);
+
+  const sortRatingLowToHigh = () => {
+    setSortBy("rating");
+    setDirection("asc");
+  };
+
+  const sortRatingHighToLow = () => {
+    setSortBy("rating");
+    setDirection("desc");
+  };
 
   return (
     <div className="p-4 bg-light rounded shadow-sm">
       <h3 className="mb-4 text-center text-primary">Book List</h3>
 
-      {/* Loading State */}
       {loading ? (
         <div className="text-center my-5">
           <Spinner animation="border" variant="primary" />
@@ -64,7 +69,7 @@ const BookList = () => {
         </div>
       ) : (
         <>
-          {/* Rating Sort Buttons */}
+      
           <div className="mb-3 d-flex justify-content-center">
             <ButtonGroup>
               <Button variant="outline-secondary" onClick={sortRatingLowToHigh}>
@@ -76,13 +81,12 @@ const BookList = () => {
             </ButtonGroup>
           </div>
 
+         
           <Table striped bordered hover responsive className="align-middle text-center">
             <thead className="table-dark">
               <tr>
                 <th>#</th>
-                <th onClick={() => sortBy("title")} style={{ cursor: "pointer" }}>
-                  Title
-                </th>
+                <th>Title</th>
                 <th>Author</th>
                 <th>Genre</th>
                 <th>Rating</th>
@@ -91,13 +95,13 @@ const BookList = () => {
             </thead>
 
             <tbody>
-              {paginated.map((book, index) => (
+              {books.map((book, index) => (
                 <tr
                   key={book.id}
                   onClick={() => navigate(`/books/${book.id}`)}
                   style={{ cursor: "pointer" }}
                 >
-                  <td>{(page - 1) * perPage + index + 1}</td>
+                  <td>{page * perPage + index + 1}</td>
                   <td>{book.title}</td>
                   <td>{book.author}</td>
                   <td>{book.genre}</td>
@@ -117,7 +121,7 @@ const BookList = () => {
                 </tr>
               ))}
 
-              {paginated.length === 0 && (
+              {books.length === 0 && (
                 <tr>
                   <td colSpan="6" className="text-muted">
                     No books available
@@ -127,25 +131,25 @@ const BookList = () => {
             </tbody>
           </Table>
 
-          {/* Pagination */}
-          {books.length > perPage && (
+          
+          {totalPages > 1 && (
             <Row className="mt-3">
-              <Col className="d-flex justify-content-between">
+              <Col className="d-flex justify-content-between align-items-center">
                 <Button
                   variant="outline-primary"
-                  disabled={page === 1}
+                  disabled={page === 0}
                   onClick={() => setPage(page - 1)}
                 >
                   Prev
                 </Button>
 
                 <span>
-                  Page {page} of {Math.ceil(books.length / perPage)}
+                  Page {page + 1} of {totalPages}
                 </span>
 
                 <Button
                   variant="outline-primary"
-                  disabled={page * perPage >= books.length}
+                  disabled={page + 1 === totalPages}
                   onClick={() => setPage(page + 1)}
                 >
                   Next

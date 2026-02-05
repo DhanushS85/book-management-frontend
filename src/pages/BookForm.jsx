@@ -101,7 +101,6 @@ const BookForm = () => {
 
                 <Form onSubmit={handleSubmit} encType="multipart/form-data">
 
-                    {/* Title */}
                     <Form.Group className="mb-3">
                         <Form.Label>Book Title</Form.Label>
                         <Form.Control
@@ -114,7 +113,6 @@ const BookForm = () => {
                         />
                     </Form.Group>
 
-                    {/* Author */}
                     <Form.Group className="mb-3">
                         <Form.Label>Author</Form.Label>
                         <Form.Control
@@ -127,7 +125,6 @@ const BookForm = () => {
                         />
                     </Form.Group>
 
-                    {/* Publication Date & ISBN */}
                     <Row className="mb-3">
                         <Col md={6}>
                             <Form.Group>
@@ -165,7 +162,6 @@ const BookForm = () => {
                         </Col>
                     </Row>
 
-                    {/* Genre & Rating */}
                     <Row className="mb-3">
                         <Col md={6}>
                             <Form.Group>
@@ -210,7 +206,6 @@ const BookForm = () => {
                         </Col>
                     </Row>
 
-                    {/* Cover Image */}
                     <Form.Group className="mb-4">
                         <Form.Label>Book Cover Image (Optional)</Form.Label>
                         <Form.Control
@@ -222,7 +217,6 @@ const BookForm = () => {
                         />
                     </Form.Group>
 
-                    {/* Submit Button */}
                     <div className="d-grid">
                         <Button
                             type="submit"
